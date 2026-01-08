@@ -103,6 +103,16 @@ echo "✓ Desktop entries installed"
 echo
 echo "[5/6] Setting default application..."
 xdg-mime default vhdx-mount.desktop application/x-vhdx
+
+# Also update mimeapps.list directly
+mkdir -p ~/.config
+MIMEAPPS="$HOME/.config/mimeapps.list"
+sed -i '/application\/x-vhdx/d' "$MIMEAPPS" 2>/dev/null || true
+if ! grep -q "\[Default Applications\]" "$MIMEAPPS" 2>/dev/null; then
+    echo "[Default Applications]" >> "$MIMEAPPS"
+fi
+sed -i '/\[Default Applications\]/a application/x-vhdx=vhdx-mount.desktop' "$MIMEAPPS"
+
 echo "✓ Default application set"
 
 # Install file manager scripts
