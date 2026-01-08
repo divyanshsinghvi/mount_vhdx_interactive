@@ -106,18 +106,59 @@ echo "✓ Desktop entries installed"
 # Set default application for .vhdx files
 echo
 echo "[5/6] Setting default application..."
-xdg-mime default vhdx-mount.desktop application/x-vhdx
 
-# Also update mimeapps.list directly
+# First, update databases to ensure desktop file is recognized
+sudo update-desktop-database /usr/share/applications/ 2>/dev/null || true
+sudo update-mime-database /usr/share/mime/ 2>/dev/null || true
+
+# Wait a moment for databases to update
+sleep 1
+
+# Set via xdg-mime
+xdg-mime default vhdx-mount.desktop application/x-vhdx 2>/dev/null || true
+
+# Also update mimeapps.list directly (multiple locations for compatibility)
 mkdir -p ~/.config
+mkdir -p ~/.local/share/applications
+
+# Update user's mimeapps.list
 MIMEAPPS="$HOME/.config/mimeapps.list"
+touch "$MIMEAPPS"
+
+# Remove any existing vhdx associations
 sed -i '/application\/x-vhdx/d' "$MIMEAPPS" 2>/dev/null || true
+
+# Ensure sections exist
 if ! grep -q "\[Default Applications\]" "$MIMEAPPS" 2>/dev/null; then
     echo "[Default Applications]" >> "$MIMEAPPS"
 fi
-sed -i '/\[Default Applications\]/a application/x-vhdx=vhdx-mount.desktop' "$MIMEAPPS"
+if ! grep -q "\[Added Associations\]" "$MIMEAPPS" 2>/dev/null; then
+    echo "" >> "$MIMEAPPS"
+    echo "[Added Associations]" >> "$MIMEAPPS"
+fi
 
-echo "✓ Default application set"
+# Add to both sections
+sed -i '/\[Default Applications\]/a application/x-vhdx=vhdx-mount.desktop' "$MIMEAPPS"
+sed -i '/\[Added Associations\]/a application/x-vhdx=vhdx-mount.desktop;' "$MIMEAPPS"
+
+# Also update local applications list
+LOCAL_MIMEAPPS="$HOME/.local/share/applications/mimeapps.list"
+if [ -f "$LOCAL_MIMEAPPS" ]; then
+    sed -i '/application\/x-vhdx/d' "$LOCAL_MIMEAPPS" 2>/dev/null || true
+    if ! grep -q "\[Default Applications\]" "$LOCAL_MIMEAPPS" 2>/dev/null; then
+        echo "[Default Applications]" >> "$LOCAL_MIMEAPPS"
+    fi
+    sed -i '/\[Default Applications\]/a application/x-vhdx=vhdx-mount.desktop' "$LOCAL_MIMEAPPS"
+fi
+
+# Verify the association was set
+CURRENT_APP=$(xdg-mime query default application/x-vhdx 2>/dev/null)
+if [ "$CURRENT_APP" = "vhdx-mount.desktop" ]; then
+    echo "✓ Default application set successfully"
+else
+    echo "⚠ Default set to: ${CURRENT_APP:-none}, expected vhdx-mount.desktop"
+    echo "  You may need to log out and back in"
+fi
 
 # Install file manager scripts
 echo
@@ -177,23 +218,25 @@ echo "========================================="
 echo "  Installation Complete!"
 echo "========================================="
 echo
-echo "You can now mount VHDX files by:"
-echo "  1. Double-clicking a .vhdx file in your file manager"
-echo "  2. Right-clicking a .vhdx file and selecting 'Mount VHDX'"
-echo "  3. Running: mount-vhdx.sh <file.vhdx>"
+echo "IMPORTANT NEXT STEPS:"
+echo "─────────────────────────────────────────"
 echo
-echo "To unmount:"
-echo "  - Right-click and select 'Unmount VHDX'"
-echo "  - Run: unmount-vhdx.sh"
-echo "  - Run: list-vhdx-mounts.sh (to see all mounted VHDX)"
+echo "1. LOG OUT and LOG BACK IN (required!)"
+echo "   This refreshes your desktop file associations"
 echo
-echo "IMPORTANT: Currently you will be prompted for sudo password."
+echo "2. After logging back in, test by:"
+echo "   - Double-clicking any .vhdx file"
+echo "   - It should mount automatically!"
+echo
+echo "If .vhdx files still don't open automatically:"
+echo "   - Run: ./fix-associations.sh"
+echo "   - Then log out/in again"
 echo
 echo "─────────────────────────────────────────"
 echo "For FULLY AUTOMATIC mounting without password:"
 echo "─────────────────────────────────────────"
 echo
-read -p "Setup passwordless mounting? (Y/n) " -n 1 -r
+read -p "Setup passwordless mounting now? (Y/n) " -n 1 -r
 echo
 echo
 if [[ ! $REPLY =~ ^[Nn]$ ]]; then
@@ -207,4 +250,9 @@ else
     echo "  ./setup-passwordless.sh"
     echo
 fi
+
+echo
+echo "═══════════════════════════════════════════"
+echo "  ⚠️  REMEMBER TO LOG OUT AND BACK IN! ⚠️"
+echo "═══════════════════════════════════════════"
 echo
