@@ -60,6 +60,7 @@ Run the passwordless setup:
 Check if the default app is set:
 ```bash
 xdg-mime default vhdx-mount.desktop application/x-vhdx
+xdg-mime default vhdx-mount.desktop application/vnd.ms-vhdx
 ```
 
 ### "qemu-nbd not found"?

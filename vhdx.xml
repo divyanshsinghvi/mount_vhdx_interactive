@@ -6,4 +6,10 @@
     <glob pattern="*.VHDX"/>
     <icon name="drive-harddisk"/>
   </mime-type>
+  <mime-type type="application/x-vhdx-disk">
+    <comment>VHDX Virtual Hard Disk</comment>
+    <glob pattern="*.vhdx"/>
+    <glob pattern="*.VHDX"/>
+    <icon name="drive-harddisk"/>
+  </mime-type>
 </mime-info>

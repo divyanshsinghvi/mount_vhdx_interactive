@@ -56,7 +56,7 @@ error_exit() {
 if [ -z "$VHDX_FILE" ]; then
     if [ -n "$HAS_ZENITY" ]; then
         VHDX_FILE=$(zenity --file-selection --title="Select VHDX File" \
-                    --file-filter="VHDX files (*.vhdx) | *.vhdx" \
+                    --file-filter="VHDX files (*.vhdx, *.VHDX) | *.vhdx *.VHDX" \
                     --file-filter="All files | *" 2>/dev/null)
         [ -z "$VHDX_FILE" ] && exit 0
 
@@ -113,7 +113,8 @@ if [ -z "$NBD_DEVICE" ]; then
 fi
 
 # Connect VHDX to NBD device
-sudo qemu-nbd --connect="$NBD_DEVICE" "$VHDX_FILE" || error_exit "Failed to connect VHDX to $NBD_DEVICE"
+QEMU_NBD_ERR=$(sudo qemu-nbd --connect="$NBD_DEVICE" --format=vhdx "$VHDX_FILE" 2>&1) || \
+    error_exit "Failed to connect VHDX to $NBD_DEVICE.\n\nDetails:\n$QEMU_NBD_ERR"
 
 # Wait for device to be ready
 sleep 2

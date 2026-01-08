@@ -155,7 +155,7 @@ class VHDXViewer:
         """Browse for VHDX file"""
         filename = filedialog.askopenfilename(
             title="Select VHDX File",
-            filetypes=[("VHDX files", "*.vhdx"), ("All files", "*.*")]
+            filetypes=[("VHDX files", "*.vhdx *.VHDX"), ("All files", "*.*")]
         )
         if filename:
             self.vhdx_path.set(filename)

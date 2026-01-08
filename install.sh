@@ -106,6 +106,7 @@ echo "✓ Desktop entries installed"
 # Set default application for .vhdx files
 echo
 echo "[5/6] Setting default application..."
+MIME_TYPES=("application/x-vhdx" "application/vnd.ms-vhdx" "application/x-vhdx-disk")
 
 # First, update databases to ensure desktop file is recognized
 sudo update-desktop-database /usr/share/applications/ 2>/dev/null || true
@@ -115,7 +116,9 @@ sudo update-mime-database /usr/share/mime/ 2>/dev/null || true
 sleep 1
 
 # Set via xdg-mime
-xdg-mime default vhdx-mount.desktop application/x-vhdx 2>/dev/null || true
+for MIME_TYPE in "${MIME_TYPES[@]}"; do
+    xdg-mime default vhdx-mount.desktop "$MIME_TYPE" 2>/dev/null || true
+done
 
 # Also update mimeapps.list directly (multiple locations for compatibility)
 mkdir -p ~/.config
@@ -126,7 +129,9 @@ MIMEAPPS="$HOME/.config/mimeapps.list"
 touch "$MIMEAPPS"
 
 # Remove any existing vhdx associations
-sed -i '/application\/x-vhdx/d' "$MIMEAPPS" 2>/dev/null || true
+for MIME_TYPE in "${MIME_TYPES[@]}"; do
+    sed -i "\|$MIME_TYPE|d" "$MIMEAPPS" 2>/dev/null || true
+done
 
 # Ensure sections exist
 if ! grep -q "\[Default Applications\]" "$MIMEAPPS" 2>/dev/null; then
@@ -138,22 +143,35 @@ if ! grep -q "\[Added Associations\]" "$MIMEAPPS" 2>/dev/null; then
 fi
 
 # Add to both sections
-sed -i '/\[Default Applications\]/a application/x-vhdx=vhdx-mount.desktop' "$MIMEAPPS"
-sed -i '/\[Added Associations\]/a application/x-vhdx=vhdx-mount.desktop;' "$MIMEAPPS"
+for MIME_TYPE in "${MIME_TYPES[@]}"; do
+    sed -i "/\[Default Applications\]/a $MIME_TYPE=vhdx-mount.desktop" "$MIMEAPPS"
+    sed -i "/\[Added Associations\]/a $MIME_TYPE=vhdx-mount.desktop;" "$MIMEAPPS"
+done
 
 # Also update local applications list
 LOCAL_MIMEAPPS="$HOME/.local/share/applications/mimeapps.list"
 if [ -f "$LOCAL_MIMEAPPS" ]; then
-    sed -i '/application\/x-vhdx/d' "$LOCAL_MIMEAPPS" 2>/dev/null || true
+    for MIME_TYPE in "${MIME_TYPES[@]}"; do
+        sed -i "\|$MIME_TYPE|d" "$LOCAL_MIMEAPPS" 2>/dev/null || true
+    done
     if ! grep -q "\[Default Applications\]" "$LOCAL_MIMEAPPS" 2>/dev/null; then
         echo "[Default Applications]" >> "$LOCAL_MIMEAPPS"
     fi
-    sed -i '/\[Default Applications\]/a application/x-vhdx=vhdx-mount.desktop' "$LOCAL_MIMEAPPS"
+    for MIME_TYPE in "${MIME_TYPES[@]}"; do
+        sed -i "/\[Default Applications\]/a $MIME_TYPE=vhdx-mount.desktop" "$LOCAL_MIMEAPPS"
+    done
 fi
 
 # Verify the association was set
-CURRENT_APP=$(xdg-mime query default application/x-vhdx 2>/dev/null)
-if [ "$CURRENT_APP" = "vhdx-mount.desktop" ]; then
+DEFAULT_OK="false"
+for MIME_TYPE in "${MIME_TYPES[@]}"; do
+    CURRENT_APP=$(xdg-mime query default "$MIME_TYPE" 2>/dev/null)
+    if [ "$CURRENT_APP" = "vhdx-mount.desktop" ]; then
+        DEFAULT_OK="true"
+        break
+    fi
+done
+if [ "$DEFAULT_OK" = "true" ]; then
     echo "✓ Default application set successfully"
 else
     echo "⚠ Default set to: ${CURRENT_APP:-none}, expected vhdx-mount.desktop"
@@ -229,7 +247,9 @@ echo "   - Double-clicking any .vhdx file"
 echo "   - It should mount automatically!"
 echo
 echo "If .vhdx files still don't open automatically:"
-echo "   - Run: ./fix-associations.sh"
+echo "   - Run: xdg-mime default vhdx-mount.desktop application/x-vhdx"
+echo "   - Run: xdg-mime default vhdx-mount.desktop application/vnd.ms-vhdx"
+echo "   - Run: xdg-mime default vhdx-mount.desktop application/x-vhdx-disk"
 echo "   - Then log out/in again"
 echo
 echo "─────────────────────────────────────────"

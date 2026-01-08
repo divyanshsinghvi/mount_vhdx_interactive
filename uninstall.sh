@@ -58,7 +58,9 @@ echo "✓ Desktop entries removed"
 echo
 echo "[5/6] Removing default application..."
 if [ -f "$HOME/.config/mimeapps.list" ]; then
-    sed -i '/application\/x-vhdx/d' "$HOME/.config/mimeapps.list" 2>/dev/null || true
+    for MIME_TYPE in application/x-vhdx application/vnd.ms-vhdx application/x-vhdx-disk; do
+        sed -i "\|$MIME_TYPE|d" "$HOME/.config/mimeapps.list" 2>/dev/null || true
+    done
 fi
 echo "✓ Default application association removed"
 

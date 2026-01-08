@@ -139,6 +139,7 @@ sudo update-mime-database /usr/share/mime/
 
 # Check if icon is recognized
 gio mime application/x-vhdx
+gio mime application/vnd.ms-vhdx
 
 # Should show: vhdx-mount.desktop
 ```
