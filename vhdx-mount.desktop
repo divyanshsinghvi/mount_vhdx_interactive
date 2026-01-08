@@ -2,9 +2,9 @@
 Version=1.0
 Type=Application
 Name=Mount VHDX
-Comment=Mount VHDX virtual disk files
+Comment=Mount VHDX with read-write access (automatic)
 Icon=vhdx-mount
-Exec=/usr/local/bin/mount-vhdx.sh %f
+Exec=/usr/local/bin/mount-vhdx-rw.sh %f
 Terminal=false
 MimeType=application/x-vhdx;
 Categories=System;FileTools;
