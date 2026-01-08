@@ -1,0 +1,12 @@
+vhdx-mount (1.0.0-1) unstable; urgency=medium
+
+  * Initial release
+  * One-click VHDX mounting with GUI integration
+  * Automatic partition detection
+  * NTFS filesystem support
+  * Desktop notifications
+  * File manager integration (Nautilus, Dolphin, Thunar)
+  * Optional passwordless mounting
+  * Standalone Python GUI application
+
+ -- Divyansh Singhvi <divyanshsinghvi@gmail.com>  Wed, 08 Jan 2026 00:00:00 +0000

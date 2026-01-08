@@ -1,0 +1,61 @@
+app-id: com.github.divyanshsinghvi.VHDXMount
+runtime: org.freedesktop.Platform
+runtime-version: '23.08'
+sdk: org.freedesktop.Sdk
+command: vhdx_viewer.py
+
+finish-args:
+  # X11 + XShm access
+  - --share=ipc
+  - --socket=x11
+  # Wayland access
+  - --socket=wayland
+  # Access to home directory
+  - --filesystem=home
+  # Access to removable media
+  - --filesystem=/media
+  - --filesystem=/run/media
+  # Network access (for potential future features)
+  - --share=network
+  # System bus access for mounting operations
+  - --system-talk-name=org.freedesktop.PolicyKit1
+  # Device access for block devices
+  - --device=all
+  # Allow sudo (this is problematic in Flatpak sandbox)
+  - --talk-name=org.freedesktop.Flatpak
+
+modules:
+  - name: qemu-utils
+    buildsystem: simple
+    build-commands:
+      - echo "Note: QEMU utilities need to be installed on host system"
+
+  - name: ntfs-3g
+    buildsystem: simple
+    build-commands:
+      - echo "Note: NTFS-3G needs to be installed on host system"
+
+  - name: zenity
+    buildsystem: simple
+    build-commands:
+      - echo "Note: Zenity needs to be installed on host system"
+
+  - name: python3-tkinter
+    buildsystem: simple
+    build-commands:
+      - echo "Note: Python3-tkinter should be available in runtime"
+
+  - name: vhdx-mount
+    buildsystem: simple
+    build-commands:
+      - install -Dm755 mount-vhdx.sh /app/bin/mount-vhdx.sh
+      - install -Dm755 unmount-vhdx.sh /app/bin/unmount-vhdx.sh
+      - install -Dm755 list-vhdx-mounts.sh /app/bin/list-vhdx-mounts.sh
+      - install -Dm755 setup-passwordless.sh /app/bin/setup-passwordless.sh
+      - install -Dm755 vhdx_viewer.py /app/bin/vhdx_viewer.py
+      - install -Dm644 vhdx-mount.desktop /app/share/applications/com.github.divyanshsinghvi.VHDXMount.desktop
+      - install -Dm644 vhdx.xml /app/share/mime/packages/vhdx.xml
+      - install -Dm644 README.md /app/share/doc/vhdx-mount/README.md
+    sources:
+      - type: dir
+        path: .

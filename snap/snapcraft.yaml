@@ -1,0 +1,82 @@
+name: vhdx-mount
+base: core22
+version: '1.0.0'
+summary: Mount VHDX virtual disk files with one click on Linux
+description: |
+  VHDX Mount Tool makes it easy to mount and access VHDX (Virtual Hard Disk)
+  files on Linux with just a single click. Features include:
+
+  - One-click mounting via double-click or right-click context menu
+  - Automatic partition detection and mounting
+  - Full NTFS filesystem support for Windows VHDX files
+  - Desktop notifications for mount/unmount operations
+  - Integration with all major Linux file managers
+  - Optional passwordless mounting for seamless operation
+
+  Simply double-click any .vhdx file in your file manager to mount it,
+  or right-click and select "Mount VHDX" from the context menu.
+
+  Files are mounted to /media/$USER/vhdx/ and automatically opened
+  in your file manager.
+
+grade: stable
+confinement: classic  # Required for sudo access and kernel module loading
+
+architectures:
+  - build-on: amd64
+  - build-on: arm64
+
+apps:
+  vhdx-mount:
+    command: usr/local/bin/mount-vhdx.sh
+    desktop: usr/share/applications/vhdx-mount.desktop
+
+  mount:
+    command: usr/local/bin/mount-vhdx.sh
+
+  unmount:
+    command: usr/local/bin/unmount-vhdx.sh
+
+  list:
+    command: usr/local/bin/list-vhdx-mounts.sh
+
+  viewer:
+    command: usr/bin/python3 usr/local/bin/vhdx_viewer.py
+    desktop: usr/share/applications/vhdx-viewer.desktop
+
+parts:
+  vhdx-mount-tool:
+    plugin: dump
+    source: .
+    organize:
+      mount-vhdx.sh: usr/local/bin/mount-vhdx.sh
+      unmount-vhdx.sh: usr/local/bin/unmount-vhdx.sh
+      list-vhdx-mounts.sh: usr/local/bin/list-vhdx-mounts.sh
+      setup-passwordless.sh: usr/local/bin/setup-passwordless.sh
+      vhdx_viewer.py: usr/local/bin/vhdx_viewer.py
+      vhdx-mount.desktop: usr/share/applications/vhdx-mount.desktop
+      vhdx-unmount.desktop: usr/share/applications/vhdx-unmount.desktop
+      vhdx.xml: usr/share/mime/packages/vhdx.xml
+    stage-packages:
+      - qemu-utils
+      - ntfs-3g
+      - zenity
+      - python3
+      - python3-tk
+    override-build: |
+      craftctl default
+      chmod +x $CRAFT_PART_INSTALL/usr/local/bin/*.sh
+      chmod +x $CRAFT_PART_INSTALL/usr/local/bin/vhdx_viewer.py
+
+plugs:
+  desktop:
+  desktop-legacy:
+  home:
+  removable-media:
+  network:
+
+layout:
+  /usr/bin/qemu-nbd:
+    bind-file: $SNAP/usr/bin/qemu-nbd
+  /usr/share/mime:
+    bind: $SNAP/usr/share/mime

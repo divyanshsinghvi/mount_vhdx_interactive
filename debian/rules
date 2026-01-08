@@ -1,0 +1,22 @@
+#!/usr/bin/make -f
+
+%:
+	dh $@
+
+override_dh_auto_install:
+	install -Dm755 mount-vhdx.sh $(DESTDIR)/usr/local/bin/mount-vhdx.sh
+	install -Dm755 unmount-vhdx.sh $(DESTDIR)/usr/local/bin/unmount-vhdx.sh
+	install -Dm755 list-vhdx-mounts.sh $(DESTDIR)/usr/local/bin/list-vhdx-mounts.sh
+	install -Dm755 setup-passwordless.sh $(DESTDIR)/usr/local/bin/setup-passwordless.sh
+	install -Dm755 vhdx_viewer.py $(DESTDIR)/usr/local/bin/vhdx_viewer.py
+	install -Dm644 vhdx-mount.desktop $(DESTDIR)/usr/share/applications/vhdx-mount.desktop
+	install -Dm644 vhdx-unmount.desktop $(DESTDIR)/usr/share/applications/vhdx-unmount.desktop
+	install -Dm644 vhdx-viewer.desktop $(DESTDIR)/usr/share/applications/vhdx-viewer.desktop
+	install -Dm644 vhdx.xml $(DESTDIR)/usr/share/mime/packages/vhdx.xml
+	install -Dm644 README.md $(DESTDIR)/usr/share/doc/vhdx-mount/README.md
+	install -Dm644 LICENSE $(DESTDIR)/usr/share/doc/vhdx-mount/LICENSE
+	# Nautilus scripts
+	install -Dm755 nautilus-scripts/Mount-VHDX $(DESTDIR)/usr/share/nautilus/scripts/Mount-VHDX
+	install -Dm755 nautilus-scripts/Unmount-VHDX $(DESTDIR)/usr/share/nautilus/scripts/Unmount-VHDX
+	# Dolphin service menu
+	install -Dm644 dolphin-servicemenu/vhdx-mount.desktop $(DESTDIR)/usr/share/kservices5/ServiceMenus/vhdx-mount.desktop

@@ -1,0 +1,10 @@
+[Desktop Entry]
+Version=1.0
+Type=Application
+Name=VHDX Viewer
+Comment=Mount and view VHDX virtual disk files
+Icon=drive-harddisk
+Exec=vhdx_viewer.py
+Terminal=false
+Categories=System;FileTools;Utility;
+Keywords=vhdx;mount;disk;virtual;viewer;
