@@ -1,0 +1,5 @@
+#!/bin/bash
+# Nautilus script to unmount VHDX files
+# Install to: ~/.local/share/nautilus/scripts/
+
+/usr/local/bin/unmount-vhdx.sh "$NAUTILUS_SCRIPT_SELECTED_FILE_PATHS"

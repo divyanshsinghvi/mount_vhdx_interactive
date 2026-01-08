@@ -1,0 +1,12 @@
+[Desktop Entry]
+Version=1.0
+Type=Application
+Name=Unmount VHDX
+Comment=Unmount VHDX virtual disk files
+Icon=drive-harddisk
+Exec=/usr/local/bin/unmount-vhdx.sh %f
+Terminal=false
+MimeType=application/x-vhdx;
+Categories=System;FileTools;
+Keywords=vhdx;unmount;disk;virtual;
+NoDisplay=false

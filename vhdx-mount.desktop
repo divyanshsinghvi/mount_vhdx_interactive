@@ -1,0 +1,12 @@
+[Desktop Entry]
+Version=1.0
+Type=Application
+Name=Mount VHDX
+Comment=Mount VHDX virtual disk files
+Icon=drive-harddisk
+Exec=/usr/local/bin/mount-vhdx.sh %f
+Terminal=false
+MimeType=application/x-vhdx;
+Categories=System;FileTools;
+Keywords=vhdx;mount;disk;virtual;
+NoDisplay=false
