@@ -171,5 +171,24 @@ echo "  - Right-click and select 'Unmount VHDX'"
 echo "  - Run: unmount-vhdx.sh"
 echo "  - Run: list-vhdx-mounts.sh (to see all mounted VHDX)"
 echo
-echo "Note: You will be prompted for your sudo password when mounting/unmounting."
+echo "IMPORTANT: Currently you will be prompted for sudo password."
+echo
+echo "─────────────────────────────────────────"
+echo "For FULLY AUTOMATIC mounting without password:"
+echo "─────────────────────────────────────────"
+echo
+read -p "Setup passwordless mounting? (Y/n) " -n 1 -r
+echo
+echo
+if [[ ! $REPLY =~ ^[Nn]$ ]]; then
+    if [ -f "setup-passwordless.sh" ]; then
+        ./setup-passwordless.sh
+    else
+        echo "Note: Run ./setup-passwordless.sh later for passwordless mounting"
+    fi
+else
+    echo "You can enable passwordless mounting later by running:"
+    echo "  ./setup-passwordless.sh"
+    echo
+fi
 echo

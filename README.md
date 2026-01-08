@@ -11,6 +11,27 @@ A simple, user-friendly tool to mount and visualize VHDX (Virtual Hard Disk) fil
 - **Visual Notifications**: Desktop notifications for mount/unmount operations
 - **Multiple File Managers**: Support for Nautilus, Dolphin, Thunar, and more
 - **Easy Management**: List and unmount VHDX files with simple commands
+- **🔓 Passwordless Option**: Optional automatic mounting without password prompts!
+
+## 🚀 Fully Automatic Mounting (Recommended!)
+
+For the best experience, enable **passwordless mounting** so you can just double-click a .vhdx file and it opens automatically without any password prompts!
+
+### Enable Automatic Mounting
+
+During installation, choose **Yes** when asked about passwordless mounting, or run:
+
+```bash
+./setup-passwordless.sh
+```
+
+This configures secure, passwordless sudo only for VHDX mounting operations. Once enabled:
+
+1. **Double-click any .vhdx file** → It mounts and opens automatically!
+2. **No password prompts** → Seamless experience
+3. **Still secure** → Only specific mount commands are allowed without password
+
+**This is completely safe** because it only allows mounting VHDX files, not general sudo access.
 
 ## Requirements
 
@@ -37,6 +58,7 @@ The installer will:
 3. Register the VHDX MIME type
 4. Set up file associations
 5. Add context menu entries to your file manager
+6. **Offer to setup passwordless mounting** (recommended for automatic operation)
 
 ### Manual Installation
 
@@ -62,15 +84,17 @@ sudo pacman -S qemu zenity ntfs-3g
 
 1. Navigate to your .vhdx file in your file manager (Nautilus, Dolphin, etc.)
 2. Double-click the .vhdx file
-3. Enter your sudo password when prompted
-4. The file manager will automatically open showing the mounted contents
+3. **With passwordless setup**: File opens automatically! 🎉
+4. **Without passwordless setup**: Enter your sudo password when prompted
+5. The file manager will automatically open showing the mounted contents
 
 ### Method 2: Right-Click Context Menu
 
 1. Right-click on a .vhdx file in your file manager
 2. Select "Mount VHDX" from the context menu
-3. Enter your sudo password when prompted
-4. The contents will be mounted and displayed
+3. **With passwordless setup**: Mounts automatically! 🎉
+4. **Without passwordless setup**: Enter your sudo password when prompted
+5. The contents will be mounted and displayed
 
 ### Method 3: Command Line
 
@@ -227,6 +251,11 @@ This will:
 - Clean up file manager integrations
 - Remove MIME type associations
 
+To also remove passwordless mounting configuration:
+```bash
+sudo rm /etc/sudoers.d/vhdx-mount
+```
+
 ## Advanced Usage
 
 ### Mount with Read-Only Access
@@ -290,6 +319,12 @@ A: Yes, by default the VHDX is mounted with read-write access. Be careful when m
 
 **Q: Can I mount multiple VHDX files at once?**
 A: Yes, you can mount up to 16 VHDX files simultaneously (limited by NBD devices).
+
+**Q: Is passwordless mounting safe?**
+A: Yes! The sudoers configuration only allows specific commands for mounting VHDX files to /media/$USER/vhdx/. It doesn't grant general sudo access. You can review the configuration in /etc/sudoers.d/vhdx-mount.
+
+**Q: How do I disable passwordless mounting?**
+A: Simply remove the sudoers file: `sudo rm /etc/sudoers.d/vhdx-mount`
 
 **Q: Does this work with VHD (not VHDX) files?**
 A: Yes! qemu-nbd supports VHD, VHDX, VMDK, VDI, and other virtual disk formats.
