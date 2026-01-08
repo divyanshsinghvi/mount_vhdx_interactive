@@ -6,6 +6,7 @@
 set -e
 
 VHDX_FILE="$1"
+MOUNT_MODE="${2:-rw}"  # Default to read-write (rw), can be 'ro' for read-only
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
 # Check if zenity is available for GUI dialogs
@@ -57,8 +58,17 @@ if [ -z "$VHDX_FILE" ]; then
                     --file-filter="VHDX files (*.vhdx) | *.vhdx" \
                     --file-filter="All files | *" 2>/dev/null)
         [ -z "$VHDX_FILE" ] && exit 0
+
+        # Ask for mount mode
+        if zenity --question --title="Mount Mode" \
+                  --text="Mount with write access?\n\nYes = Read-Write (can modify files)\nNo = Read-Only (safe mode)" \
+                  --width=400 2>/dev/null; then
+            MOUNT_MODE="rw"
+        else
+            MOUNT_MODE="ro"
+        fi
     else
-        error_exit "No VHDX file specified.\n\nUsage: $0 <vhdx-file>"
+        error_exit "No VHDX file specified.\n\nUsage: $0 <vhdx-file> [rw|ro]\n\nExamples:\n  $0 disk.vhdx rw    # Read-write (default)\n  $0 disk.vhdx ro    # Read-only"
     fi
 fi
 
@@ -76,8 +86,14 @@ if ! command -v qemu-nbd &> /dev/null; then
     error_exit "qemu-nbd not found!\n\nInstall with:\n  sudo apt install qemu-utils  (Debian/Ubuntu)\n  sudo dnf install qemu-img  (Fedora)\n  sudo pacman -S qemu  (Arch)"
 fi
 
+# Display mount mode
+MODE_TEXT="Read-Write (can modify files)"
+if [ "$MOUNT_MODE" = "ro" ]; then
+    MODE_TEXT="Read-Only (safe mode)"
+fi
+
 # Load NBD module
-notify "VHDX Mount" "Mounting $VHDX_NAME..."
+notify "VHDX Mount" "Mounting $VHDX_NAME...\nMode: $MODE_TEXT"
 sudo modprobe nbd max_part=8 2>/dev/null || error_exit "Failed to load NBD kernel module.\n\nRun: sudo modprobe nbd max_part=8"
 
 # Find available NBD device
@@ -124,21 +140,21 @@ if [ -e "${NBD_DEVICE}p1" ]; then
         fi
 
         # Try mounting with different filesystems
-        if sudo mount -o rw "$part" "$PART_MOUNT" 2>/dev/null; then
-            echo "Mounted $part to $PART_MOUNT"
+        if sudo mount -o $MOUNT_MODE "$part" "$PART_MOUNT" 2>/dev/null; then
+            echo "Mounted $part to $PART_MOUNT ($MOUNT_MODE)"
             MOUNTED=1
-        elif sudo mount -t ntfs-3g -o rw,uid=$(id -u),gid=$(id -g) "$part" "$PART_MOUNT" 2>/dev/null; then
-            echo "Mounted $part (NTFS) to $PART_MOUNT"
+        elif sudo mount -t ntfs-3g -o $MOUNT_MODE,uid=$(id -u),gid=$(id -g) "$part" "$PART_MOUNT" 2>/dev/null; then
+            echo "Mounted $part (NTFS) to $PART_MOUNT ($MOUNT_MODE)"
             MOUNTED=1
         fi
     done
 else
     # No partitions, try mounting device directly
-    if sudo mount -o rw "$NBD_DEVICE" "$MOUNT_DIR" 2>/dev/null; then
-        echo "Mounted $NBD_DEVICE to $MOUNT_DIR"
+    if sudo mount -o $MOUNT_MODE "$NBD_DEVICE" "$MOUNT_DIR" 2>/dev/null; then
+        echo "Mounted $NBD_DEVICE to $MOUNT_DIR ($MOUNT_MODE)"
         MOUNTED=1
-    elif sudo mount -t ntfs-3g -o rw,uid=$(id -u),gid=$(id -g) "$NBD_DEVICE" "$MOUNT_DIR" 2>/dev/null; then
-        echo "Mounted $NBD_DEVICE (NTFS) to $MOUNT_DIR"
+    elif sudo mount -t ntfs-3g -o $MOUNT_MODE,uid=$(id -u),gid=$(id -g) "$NBD_DEVICE" "$MOUNT_DIR" 2>/dev/null; then
+        echo "Mounted $NBD_DEVICE (NTFS) to $MOUNT_DIR ($MOUNT_MODE)"
         MOUNTED=1
     fi
 fi
@@ -158,7 +174,9 @@ echo "VHDX_FILE=$VHDX_FILE" >> "$MOUNT_INFO_FILE"
 sudo chown -R $USER:$USER "$MOUNT_DIR" 2>/dev/null || true
 
 # Success notification
-notify "VHDX Mounted" "Mounted: $VHDX_NAME\nLocation: $MOUNT_DIR\n\nOpening file manager..."
+MODE_DESC="Read-Write ✍"
+[ "$MOUNT_MODE" = "ro" ] && MODE_DESC="Read-Only 👁"
+notify "VHDX Mounted" "Mounted: $VHDX_NAME\nLocation: $MOUNT_DIR\nMode: $MODE_DESC\n\nOpening file manager..."
 
 # Open in file manager
 if command -v xdg-open &> /dev/null; then

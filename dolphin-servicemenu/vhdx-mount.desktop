@@ -2,14 +2,19 @@
 Type=Service
 X-KDE-ServiceTypes=KonqPopupMenu/Plugin
 MimeType=application/x-vhdx;
-Actions=mount-vhdx;unmount-vhdx;
+Actions=mount-vhdx-rw;mount-vhdx-ro;unmount-vhdx;
 
-[Desktop Action mount-vhdx]
-Name=Mount VHDX
-Icon=drive-harddisk
-Exec=/usr/local/bin/mount-vhdx.sh %f
+[Desktop Action mount-vhdx-rw]
+Name=Mount VHDX (Read-Write)
+Icon=vhdx-mount
+Exec=/usr/local/bin/mount-vhdx-rw.sh %f
+
+[Desktop Action mount-vhdx-ro]
+Name=Mount VHDX (Read-Only)
+Icon=vhdx-mount
+Exec=/usr/local/bin/mount-vhdx-ro.sh %f
 
 [Desktop Action unmount-vhdx]
 Name=Unmount VHDX
-Icon=drive-harddisk
+Icon=vhdx-mount
 Exec=/usr/local/bin/unmount-vhdx.sh %f

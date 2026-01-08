@@ -1,0 +1,5 @@
+#!/bin/bash
+# Nautilus script to mount VHDX files with READ-ONLY access
+# Install to: ~/.local/share/nautilus/scripts/
+
+/usr/local/bin/mount-vhdx-ro.sh "$NAUTILUS_SCRIPT_SELECTED_FILE_PATHS"

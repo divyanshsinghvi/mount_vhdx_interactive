@@ -1,0 +1,12 @@
+[Desktop Entry]
+Version=1.0
+Type=Application
+Name=Mount VHDX (Read-Only)
+Comment=Mount VHDX read-only - safe mode, cannot modify
+Icon=vhdx-mount
+Exec=/usr/local/bin/mount-vhdx-ro.sh %f
+Terminal=false
+MimeType=application/x-vhdx;
+Categories=System;FileTools;
+Keywords=vhdx;mount;disk;virtual;readonly;safe;
+NoDisplay=false

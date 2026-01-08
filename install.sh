@@ -80,6 +80,8 @@ fi
 echo
 echo "[2/6] Installing scripts..."
 sudo install -m 755 mount-vhdx.sh /usr/local/bin/mount-vhdx.sh
+sudo install -m 755 mount-vhdx-rw.sh /usr/local/bin/mount-vhdx-rw.sh
+sudo install -m 755 mount-vhdx-ro.sh /usr/local/bin/mount-vhdx-ro.sh
 sudo install -m 755 unmount-vhdx.sh /usr/local/bin/unmount-vhdx.sh
 sudo install -m 755 list-vhdx-mounts.sh /usr/local/bin/list-vhdx-mounts.sh
 echo "✓ Scripts installed to /usr/local/bin/"
@@ -95,6 +97,8 @@ echo "✓ VHDX MIME type registered"
 echo
 echo "[4/6] Installing desktop entries..."
 sudo install -m 644 vhdx-mount.desktop /usr/share/applications/vhdx-mount.desktop
+sudo install -m 644 vhdx-mount-rw.desktop /usr/share/applications/vhdx-mount-rw.desktop
+sudo install -m 644 vhdx-mount-ro.desktop /usr/share/applications/vhdx-mount-ro.desktop
 sudo install -m 644 vhdx-unmount.desktop /usr/share/applications/vhdx-unmount.desktop
 sudo update-desktop-database /usr/share/applications/
 echo "✓ Desktop entries installed"
@@ -124,6 +128,8 @@ if command -v nautilus &> /dev/null; then
     NAUTILUS_SCRIPTS_DIR="$HOME/.local/share/nautilus/scripts"
     mkdir -p "$NAUTILUS_SCRIPTS_DIR"
     install -m 755 nautilus-scripts/Mount-VHDX "$NAUTILUS_SCRIPTS_DIR/Mount VHDX"
+    install -m 755 nautilus-scripts/Mount-VHDX-ReadWrite "$NAUTILUS_SCRIPTS_DIR/Mount VHDX (Read-Write)"
+    install -m 755 nautilus-scripts/Mount-VHDX-ReadOnly "$NAUTILUS_SCRIPTS_DIR/Mount VHDX (Read-Only)"
     install -m 755 nautilus-scripts/Unmount-VHDX "$NAUTILUS_SCRIPTS_DIR/Unmount VHDX"
     echo "  ✓ Nautilus scripts installed"
 fi

@@ -1,0 +1,5 @@
+#!/bin/bash
+# Nautilus script to mount VHDX files with READ-WRITE access
+# Install to: ~/.local/share/nautilus/scripts/
+
+/usr/local/bin/mount-vhdx-rw.sh "$NAUTILUS_SCRIPT_SELECTED_FILE_PATHS"

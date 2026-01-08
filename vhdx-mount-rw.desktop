@@ -1,0 +1,12 @@
+[Desktop Entry]
+Version=1.0
+Type=Application
+Name=Mount VHDX (Read-Write)
+Comment=Mount VHDX with write access - can modify files
+Icon=vhdx-mount
+Exec=/usr/local/bin/mount-vhdx-rw.sh %f
+Terminal=false
+MimeType=application/x-vhdx;
+Categories=System;FileTools;
+Keywords=vhdx;mount;disk;virtual;write;
+NoDisplay=false
