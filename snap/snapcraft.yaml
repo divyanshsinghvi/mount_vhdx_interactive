@@ -21,6 +21,7 @@ description: |
 
 grade: stable
 confinement: classic  # Required for sudo access and kernel module loading
+icon: assets/icon.svg
 
 architectures:
   - build-on: amd64

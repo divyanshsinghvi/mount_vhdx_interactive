@@ -55,26 +55,24 @@ $USER ALL=(root) NOPASSWD: /usr/sbin/partprobe
 $USER ALL=(root) NOPASSWD: /usr/sbin/partprobe *
 
 # Allow mount operations for NBD devices
-$USER ALL=(root) NOPASSWD: /bin/mount -o * /dev/nbd* *
-$USER ALL=(root) NOPASSWD: /usr/bin/mount -o * /dev/nbd* *
-$USER ALL=(root) NOPASSWD: /bin/mount -t * -o * /dev/nbd* *
-$USER ALL=(root) NOPASSWD: /usr/bin/mount -t * -o * /dev/nbd* *
+$USER ALL=(root) NOPASSWD: /bin/mount
+$USER ALL=(root) NOPASSWD: /usr/bin/mount
 
 # Allow umount operations
-$USER ALL=(root) NOPASSWD: /bin/umount /media/$USER/vhdx/*
-$USER ALL=(root) NOPASSWD: /usr/bin/umount /media/$USER/vhdx/*
+$USER ALL=(root) NOPASSWD: /bin/umount
+$USER ALL=(root) NOPASSWD: /usr/bin/umount
 
 # Allow mkdir for mount points
-$USER ALL=(root) NOPASSWD: /bin/mkdir -p /media/$USER/vhdx/*
-$USER ALL=(root) NOPASSWD: /usr/bin/mkdir -p /media/$USER/vhdx/*
+$USER ALL=(root) NOPASSWD: /bin/mkdir
+$USER ALL=(root) NOPASSWD: /usr/bin/mkdir
 
 # Allow rmdir for cleanup
-$USER ALL=(root) NOPASSWD: /bin/rmdir /media/$USER/vhdx/*
-$USER ALL=(root) NOPASSWD: /usr/bin/rmdir /media/$USER/vhdx/*
+$USER ALL=(root) NOPASSWD: /bin/rmdir
+$USER ALL=(root) NOPASSWD: /usr/bin/rmdir
 
 # Allow chown for mount points
-$USER ALL=(root) NOPASSWD: /bin/chown -R $USER:$USER /media/$USER/vhdx/*
-$USER ALL=(root) NOPASSWD: /usr/bin/chown -R $USER:$USER /media/$USER/vhdx/*
+$USER ALL=(root) NOPASSWD: /bin/chown
+$USER ALL=(root) NOPASSWD: /usr/bin/chown
 EOF
 
 # Set proper permissions
