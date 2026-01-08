@@ -7,6 +7,7 @@ set -e
 
 VHDX_FILE="$1"
 MOUNT_MODE="${2:-rw}"  # Default to read-write (rw), can be 'ro' for read-only
+SKIP_DIALOG="${3:-}"   # If set to "skip-dialog", don't ask user for mode
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
 # Check if zenity is available for GUI dialogs
@@ -59,13 +60,15 @@ if [ -z "$VHDX_FILE" ]; then
                     --file-filter="All files | *" 2>/dev/null)
         [ -z "$VHDX_FILE" ] && exit 0
 
-        # Ask for mount mode
-        if zenity --question --title="Mount Mode" \
-                  --text="Mount with write access?\n\nYes = Read-Write (can modify files)\nNo = Read-Only (safe mode)" \
-                  --width=400 2>/dev/null; then
-            MOUNT_MODE="rw"
-        else
-            MOUNT_MODE="ro"
+        # Ask for mount mode only if not skipping dialog
+        if [ "$SKIP_DIALOG" != "skip-dialog" ]; then
+            if zenity --question --title="Mount Mode" \
+                      --text="Mount with write access?\n\nYes = Read-Write (can modify files)\nNo = Read-Only (safe mode)" \
+                      --width=400 2>/dev/null; then
+                MOUNT_MODE="rw"
+            else
+                MOUNT_MODE="ro"
+            fi
         fi
     else
         error_exit "No VHDX file specified.\n\nUsage: $0 <vhdx-file> [rw|ro]\n\nExamples:\n  $0 disk.vhdx rw    # Read-write (default)\n  $0 disk.vhdx ro    # Read-only"

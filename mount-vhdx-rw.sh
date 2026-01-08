@@ -3,5 +3,8 @@
 # mount-vhdx-rw.sh - Mount VHDX with READ-WRITE access (can modify files)
 #
 
-# Simply call mount-vhdx.sh with 'rw' parameter
-exec "$(dirname "$0")/mount-vhdx.sh" "$@" rw
+# Get the directory where this script is located
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+
+# Call mount-vhdx.sh with 'rw' parameter and skip the dialog
+"$SCRIPT_DIR/mount-vhdx.sh" "$1" rw skip-dialog
